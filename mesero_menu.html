@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú del Mesero - Bar Selecto</title>
+</head>
+<body>
+    <h1>Bienvenido al Menú del Mesero</h1>
+    
+    <h2>Agregar Pedido</h2>
+    <form method="POST" action="{{ url_for('agregar_pedido') }}">
+        <label for="pedido">Descripción del Pedido:</label>
+        <input type="text" name="pedido" id="pedido" required><br>
+
+        <label for="mesa">Número de Mesa:</label>
+        <input type="number" name="mesa" id="mesa" required><br>
+
+        <button type="submit">Agregar Pedido</button>
+    </form>
+
+    <h2>Pedidos Pendientes</h2>
+    <ul>
+        {% for pedido in pedidos %}
+            <li>{{ pedido[1] }} - Mesa {{ pedido[2] }} - Estado: {{ pedido[3] }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+</body>
+</html>
