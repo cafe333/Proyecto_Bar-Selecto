@@ -5,3 +5,4 @@ En esta etapa del proyecto se incluyen los primeros avances, tales como los mock
 
 Este sistema permitirá gestionar mesas y pedidos en tiempo real, administrar el catálogo de bebidas y botanas, controlar inventario, generar reportes y mejorar la experiencia del cliente dentro del bar. El repositorio servirá para documentar todo el proceso de desarrollo, desde el diseño hasta la implementación funcional.
 
+hubo fallas al querer usar la conexion del git entre nosotro ya en la otra entrega se va a solucionar.
