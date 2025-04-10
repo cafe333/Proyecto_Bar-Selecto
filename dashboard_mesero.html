@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Mesero</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(to right, #0f0f0f, #1c1c1c);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(208, 169, 51, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            width: 90%;
+            max-width: 1000px;
+            padding: 40px;
+        }
+
+        .logo-section {
+            background-image: url('{{ url_for("static", filename="images/logo_selecto.png") }}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: #0f0f0f;
+            width: 40%;
+            height: 300px;
+        }
+
+        .content-section {
+            width: 55%;
+            color: white;
+        }
+
+        h2 {
+            font-size: 40px;
+            color: #ff88cc;
+            text-shadow: 0 0 10px #ff88cc;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #ccc;
+            text-shadow: 0 0 5px #7effb2;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .button-container button {
+            padding: 15px 25px;
+            font-size: 20px;
+            color: #0f0f0f;
+            background-color: #7effb2;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 15px #7effb2;
+            transition: all 0.3s ease;
+        }
+
+        .button-container button:hover {
+            background-color: #fff;
+            color: #111;
+            box-shadow: 0 0 25px #7effb2;
+        }
+
+        a {
+            color:rgb(0, 0, 0);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px #ff88cc;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .logo-section {
+                width: 80%;
+                height: 200px;
+            }
+
+            .content-section {
+                width: 100%;
+                padding-top: 20px;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-section"></div>
+        <div class="content-section">
+            <h2>Menú del Mesero</h2>
+            <p>Gestionar mesas, pedidos, y cuentas.</p>
+
+            <div class="button-container">
+                <button><a href="/gestion_mesas">Gestionar Mesas</a></button>
+                <button><a href="/gestion_pedidos">Gestionar Pedidos</a></button>
+                <button><a href="/gestion_cuentas">Gestionar Cuentas</a></button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
