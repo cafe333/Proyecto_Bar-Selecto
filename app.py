@@ -1,82 +1,86 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, session
 import mysql.connector
 
 app = Flask(__name__)
-app.secret_key = "clave_secreta"  
-
+app.secret_key = 'secret_key' 
 
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
         user="root",
-        password="123",
-        database="proyecto_bar_selecto"
+        password="123", 
+        database="bar_selecto" 
     )
 
+# Ruta para la página de login
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         contrasenia = request.form['contrasenia']
-        cursor = get_db_connection().cursor()
-        cursor.execute("SELECT * FROM empleado WHERE Contrasenia = %s", (contrasenia,))
-        empleado = cursor.fetchone()
 
-        if empleado:
-            rol_id = empleado[4]  
-            
-            # Obtén el rol por el ID
-            cursor.execute("SELECT nombre_rol FROM roles WHERE ID_Roles = %s", (rol_id,))
-            rol = cursor.fetchone()[0]  
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
 
-            if rol == 'Administrador':
-                return redirect(url_for('admin_menu'))
-            elif rol == 'Mesero':
-                return redirect(url_for('mesero_menu'))
+        # asumiendo que el teléfono ya está guardado en la base de datos.
+        cursor.execute("SELECT * FROM empleado WHERE contrasenia = %s", (contrasenia,))
+        user = cursor.fetchone()
+
+        if user:
+            # Guarda el telefono para no pedir otra vez
+            session['telefono'] = user['telefono']
+
+            if user['id_roles'] == 1: 
+                return redirect('/dashboard_mesero')
+            elif user['id_roles'] == 2:  
+                return redirect('/dashboard_administrador')
         else:
-            flash("Contraseña incorrecta o no registrada", "danger")
+            flash('Usuario o contraseña incorrectos', 'danger')
 
     return render_template('login.html')
 
-
-@app.route('/mesero')
-def mesero_menu():
-    return render_template('mesero_menu.html')
-
-
-@app.route('/admin')
-def admin_menu():
-    return render_template('admin_menu.html')
-
-
-@app.route('/registro', methods=['GET', 'POST'])
-def registro():
+@app.route('/registrar_empleado', methods=['GET', 'POST'])
+def registrar_empleado():
     if request.method == 'POST':
         nombre = request.form['nombre']
-        apellido_paterno = request.form['apellido_paterno']
-        apellido_materno = request.form['apellido_materno']
+        apellidop = request.form['apellidop']
+        apellidom = request.form['apellidom']
+        telefono = request.form['telefono']
         contrasenia = request.form['contrasenia']
-        telefono = request.form['telefono']  
-        rol = request.form['rol']
+        id_roles = request.form['id_roles']
 
-      
-        cursor = get_db_connection().cursor()
-        cursor.execute("SELECT Telefono FROM empleado WHERE Telefono = %s", (telefono,))
-        existing_telefono = cursor.fetchone()
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-        if existing_telefono:
-            flash("El teléfono ya está registrado. Intenta con otro.", "danger")
-            return render_template('registro.html')
-        
-        
-        cursor.execute("SELECT ID_Roles FROM roles WHERE nombre_rol = %s", (rol,))
-        rol_id = cursor.fetchone()[0]
+        try:
+            cursor.execute(""" 
+                INSERT INTO empleado (nombre, apellidop, apellidom, telefono, contrasenia, id_roles)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (nombre, apellidop, apellidom, telefono, contrasenia, id_roles))
+            
+            conn.commit()
+            flash('Empleado registrado exitosamente', 'success')
 
-        
-        cursor.execute("INSERT INTO empleado (Telefono, Nombre, ApellidoP, ApellidoM, Contrasenia, ID_Roles) VALUES (%s, %s, %s, %s, %s, %s)",
-                       (telefono, nombre, apellido_paterno, apellido_materno, contrasenia, rol_id))
-        get_db_connection().commit()
+            # Guardar el teléfono en la sesión después de registro
+            session['telefono'] = telefono
 
-        flash("Registro exitoso, ya puedes iniciar sesión.", "success")
-        return redirect(url_for('login'))
+            return redirect('/')  # Redirige al login
+        except Exception as e:
+            conn.rollback()  
+            flash(f'Ocurrió un error: {e}', 'danger')
+            return redirect('/registrar_empleado')
+        finally:
+            cursor.close()
+            conn.close()
 
-    return render_template('registro.html')
+    return render_template('registrar_empleado.html')
+
+@app.route('/dashboard_mesero', methods=['GET', 'POST'])
+def dashboard_mesero():
+    return render_template('dashboard_mesero.html')
+
+@app.route('/dashboard_administrador', methods=['GET', 'POST'])
+def dashboard_administrador():
+    return render_template('dashboard_administrador.html')
+
+if __name__ == "__main__":
+    app.run(debug=True)
